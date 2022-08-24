@@ -3,6 +3,8 @@ package com.cos.blog.test;
 import com.cos.blog.model.RoleType;
 import com.cos.blog.model.User;
 import com.cos.blog.repository.UserRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @RestController
+@Api(tags = {"더미Test API"})
 public class DummyController {
 
     @Autowired
@@ -23,6 +26,7 @@ public class DummyController {
 
     @Transactional
     @PutMapping("/dummy/user/{id}")
+    @ApiOperation(value = "dummy 회원 update")
     public User updateUser(@PathVariable int id, @RequestBody User requestUser) { // json data 받으려면 @RequestBody 써야된다.
         System.out.println("id = " + id);
         System.out.println("requestUser password = " + requestUser.getPassword());
