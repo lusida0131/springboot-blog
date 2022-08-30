@@ -6,6 +6,7 @@ import com.cos.blog.repository.UserRepository;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -15,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 @RestController
 @Api(tags = {"더미Test API"})
@@ -24,7 +24,18 @@ public class DummyController {
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional
+    @DeleteMapping("/dummy/user/{id}")
+    public String delete(@PathVariable int id) {
+        try {
+            userRepository.deleteById(id);
+        }
+        catch (EmptyResultDataAccessException e) {
+            return "삭제에 실패하였습니다. 해당아이디는 존재하지 않습니다";
+        }
+        return "삭제 되었습니다. id: " + id;
+    }
+
+    @Transactional // 매서드 종료시에 commit을 한다.
     @PutMapping("/dummy/user/{id}")
     @ApiOperation(value = "dummy 회원 update")
     public User updateUser(@PathVariable int id, @RequestBody User requestUser) { // json data 받으려면 @RequestBody 써야된다.
@@ -40,7 +51,7 @@ public class DummyController {
         //userRepository.save(requestUser); // save 해당 id가 없으면 insert하고, 있으면 update한다. transaction 어노테이션 붙이면 save없어도 update된다.
 
         //더티 체킹
-        return null;
+        return user;
     }
     @GetMapping("/dummy/users")
     public List<User> list() {
